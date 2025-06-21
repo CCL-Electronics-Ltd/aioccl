@@ -277,25 +277,25 @@ CCL_SENSORS: dict[str, CCLSensorPreset] = {
         "CH7 Type", CCLSensorTypes.CH_SENSOR_TYPE, CCLDeviceCompartment.OTHER
     ),
     "t6c1wls": CCLSensorPreset(
-        "Leakage CH1", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER, True
+        "Leakage CH1", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER
     ),
     "t6c2wls": CCLSensorPreset(
-        "Leakage CH2", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER, True
+        "Leakage CH2", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER
     ),
     "t6c3wls": CCLSensorPreset(
-        "Leakage CH3", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER, True
+        "Leakage CH3", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER
     ),
     "t6c4wls": CCLSensorPreset(
-        "Leakage CH4", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER, True
+        "Leakage CH4", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER
     ),
     "t6c5wls": CCLSensorPreset(
-        "Leakage CH5", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER, True
+        "Leakage CH5", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER
     ),
     "t6c6wls": CCLSensorPreset(
-        "Leakage CH6", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER, True
+        "Leakage CH6", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER
     ),
     "t6c7wls": CCLSensorPreset(
-        "Leakage CH7", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER, True
+        "Leakage CH7", CCLSensorTypes.LEAKAGE, CCLDeviceCompartment.OTHER
     ),
     "t5lskm": CCLSensorPreset(
         "Lightning Distance",
