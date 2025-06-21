@@ -39,11 +39,6 @@ class CCLSensor:
         return None
 
     @property
-    def binary(self) -> bool:
-        """Decide if the sensor is binary."""
-        return CCL_SENSORS[self._key].binary
-
-    @property
     def value(self) -> None | str | int | float:
         """Return the intrinsic sensor value."""
         if self.sensor_type.name in CCL_SENSOR_VALUES:
@@ -62,7 +57,6 @@ class CCLSensorPreset:
     name: str
     sensor_type: str
     compartment: CCLDeviceCompartment | None = None
-    binary: bool = False
 
 
 class CCLSensorTypes(enum.Enum):
@@ -335,25 +329,25 @@ CCL_SENSORS: dict[str, CCLSensorPreset] = {
     ),
     # Status 78-119
     "t234c1bat": CCLSensorPreset(
-        "Battery: CH1", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS, True
+        "Battery: CH1", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS
     ),
     "t234c2bat": CCLSensorPreset(
-        "Battery: CH2", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS, True
+        "Battery: CH2", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS
     ),
     "t234c3bat": CCLSensorPreset(
-        "Battery: CH3", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS, True
+        "Battery: CH3", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS
     ),
     "t234c4bat": CCLSensorPreset(
-        "Battery: CH4", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS, True
+        "Battery: CH4", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS
     ),
     "t234c5bat": CCLSensorPreset(
-        "Battery: CH5", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS, True
+        "Battery: CH5", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS
     ),
     "t234c6bat": CCLSensorPreset(
-        "Battery: CH6", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS, True
+        "Battery: CH6", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS
     ),
     "t234c7bat": CCLSensorPreset(
-        "Battery: CH7", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS, True
+        "Battery: CH7", CCLSensorTypes.BATTERY_BINARY, CCLDeviceCompartment.STATUS
     ),
     "t11bat": CCLSensorPreset(
         "Battery Level: CO", CCLSensorTypes.BATTERY, CCLDeviceCompartment.STATUS
@@ -365,7 +359,6 @@ CCL_SENSORS: dict[str, CCLSensorPreset] = {
         "Battery: Console",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t9bat": CCLSensorPreset(
         "Battery Level: HCHO/VOC", CCLSensorTypes.BATTERY, CCLDeviceCompartment.STATUS
@@ -374,55 +367,46 @@ CCL_SENSORS: dict[str, CCLSensorPreset] = {
         "Battery: Leakage CH1",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c2bat": CCLSensorPreset(
         "Battery: Leakage CH2",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c3bat": CCLSensorPreset(
         "Battery: Leakage CH3",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c4bat": CCLSensorPreset(
         "Battery: Leakage CH4",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c5bat": CCLSensorPreset(
         "Battery: Leakage CH5",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c6bat": CCLSensorPreset(
         "Battery: Leakage CH6",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c7bat": CCLSensorPreset(
         "Battery: Leakage CH7",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t5lsbat": CCLSensorPreset(
         "Battery: Lightning Sensor",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t1bat": CCLSensorPreset(
         "Battery: Sensor Array",
         CCLSensorTypes.BATTERY_BINARY,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t1batvt": CCLSensorPreset(
         "Battery Voltage: Sensor Array",
@@ -433,99 +417,87 @@ CCL_SENSORS: dict[str, CCLSensorPreset] = {
         "Battery Level: PM2.5/10", CCLSensorTypes.BATTERY, CCLDeviceCompartment.STATUS
     ),
     "t234c1cn": CCLSensorPreset(
-        "Connection: CH1", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS, True
+        "Connection: CH1", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS
     ),
     "t234c2cn": CCLSensorPreset(
-        "Connection: CH2", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS, True
+        "Connection: CH2", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS
     ),
     "t234c3cn": CCLSensorPreset(
-        "Connection: CH3", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS, True
+        "Connection: CH3", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS
     ),
     "t234c4cn": CCLSensorPreset(
-        "Connection: CH4", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS, True
+        "Connection: CH4", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS
     ),
     "t234c5cn": CCLSensorPreset(
-        "Connection: CH5", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS, True
+        "Connection: CH5", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS
     ),
     "t234c6cn": CCLSensorPreset(
-        "Connection: CH6", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS, True
+        "Connection: CH6", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS
     ),
     "t234c7cn": CCLSensorPreset(
-        "Connection: CH7", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS, True
+        "Connection: CH7", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS
     ),
     "t6c1cn": CCLSensorPreset(
         "Connection: Leakage CH1",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c2cn": CCLSensorPreset(
         "Connection: Leakage CH2",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c3cn": CCLSensorPreset(
         "Connection: Leakage CH3",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c4cn": CCLSensorPreset(
         "Connection: Leakage CH4",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c5cn": CCLSensorPreset(
         "Connection: Leakage CH5",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c6cn": CCLSensorPreset(
         "Connection: Leakage CH6",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t6c7cn": CCLSensorPreset(
         "Connection: Leakage CH7",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t5lscn": CCLSensorPreset(
         "Connection: Lightning Sensor",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t11cn": CCLSensorPreset(
-        "Connection: CO", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS, True
+        "Connection: CO", CCLSensorTypes.CONNECTION, CCLDeviceCompartment.STATUS
     ),
     "t10cn": CCLSensorPreset(
         "Connection: CO\u2082",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t9cn": CCLSensorPreset(
         "Connection: HCHO/VOC",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t1cn": CCLSensorPreset(
         "Connection: Sensor Array",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
     "t8cn": CCLSensorPreset(
         "Connection: PM2.5/10",
         CCLSensorTypes.CONNECTION,
         CCLDeviceCompartment.STATUS,
-        True,
     ),
 }

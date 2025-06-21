@@ -27,11 +27,7 @@ class CCLDevice:
             model: str | None
             passkey: str
             serial_no: str | None
-            
-        class Data(TypedDict):
-            """Store sensor data."""
-            binary_sensors: dict[str, CCLSensor]
-            sensors: dict[str, CCLSensor]
+
 
         self._info: Info = {
             "fw_ver": None,
@@ -41,15 +37,11 @@ class CCLDevice:
             "passkey": passkey,
             "serial_no": None,
         }
-        
-        self._data: Data = {
-            "binary_sensors": {},
-            "sensors": {}
-        }
-        
+
+        self._sensors: dict[str, CCLSensor] = {}
+
         self._update_callback = {}
 
-        self._new_binary_sensor_callbacks = set()
         self._new_sensors: list[CCLSensor] | None = []
         self._new_sensor_callbacks = set()
 
@@ -93,9 +85,9 @@ class CCLDevice:
         return self._info["fw_ver"]
 
     @property
-    def get_data(self) -> dict[str, dict[str, CCLSensor]]:
+    def get_sensors(self) -> dict[str, CCLSensor]:
         """Get all types of sensor data under this device."""
-        return self._data
+        return self._sensors
 
     def update_info(self, new_info: dict[str, None | str]) -> None:
         """Add or update device info."""
@@ -107,16 +99,10 @@ class CCLDevice:
     def process_data(self, data: dict[str, None | str | int | float]) -> None:
         """Add or update all sensor values."""
         for key, value in data.items():
-            if CCL_SENSORS.get(key).binary:
-                if key not in self._data["binary_sensors"]:
-                    self._data["binary_sensors"][key] = CCLSensor(key)
-                    self._new_sensors.append(self._data["binary_sensors"][key])
-                self._data["binary_sensors"][key].value = value
-            else:
-                if key not in self._data["sensors"]:
-                    self._data["sensors"][key] = CCLSensor(key)
-                    self._new_sensors.append(self._data["sensors"][key])
-                self._data["sensors"][key].value = value
+            if key not in self._sensors:
+                self._sensors[key] = CCLSensor(key)
+                self._new_sensors.append(self._sensors[key])
+            self._sensors[key].value = value
 
         add_count = self._publish_new_sensors()
         _LOGGER.debug(
@@ -140,7 +126,7 @@ class CCLDevice:
     def _publish_updates(self) -> None:
         """Call the function to update sensor data."""
         try:
-            self._update_callback(self._data)
+            self._update_callback(self._sensors)
         except Exception as err:  # pylint: disable=broad-exception-caught
             _LOGGER.warning(
                 "Error while updating sensors for device %s: %s",
