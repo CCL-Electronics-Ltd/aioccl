@@ -24,7 +24,7 @@ class CCLServer:
     @staticmethod
     def register(device: CCLDevice) -> None:
         """Register a device with a passkey."""
-        if CCLServer.devices[device.passkey] is not None:
+        if CCLServer.devices.get(device.passkey, None) is not None:
             raise CCLDeviceRegistrationException("Device already exists")
         CCLServer.devices[device.passkey] = device
         _LOGGER.debug("Device registered: %s", device.passkey)
