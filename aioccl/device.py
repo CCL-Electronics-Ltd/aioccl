@@ -6,6 +6,7 @@ import logging
 import time
 from typing import Callable, TypedDict
 
+from .exception import CCLDataUpdateException
 from .sensor import CCLSensor, CCL_SENSORS
 
 _LOGGER = logging.getLogger(__name__)
@@ -83,10 +84,12 @@ class CCLDevice:
     def fw_ver(self) -> str | None:
         """Return the firmware version."""
         return self._info["fw_ver"]
-
+    
     @property
     def get_sensors(self) -> dict[str, CCLSensor]:
         """Get all types of sensor data under this device."""
+        if len(self._sensors) == 0:
+            raise CCLDataUpdateException("Device is offline or not ready")
         return self._sensors
 
     def update_info(self, new_info: dict[str, None | str]) -> None:

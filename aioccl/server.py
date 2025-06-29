@@ -8,6 +8,7 @@ import logging
 from aiohttp import web
 
 from .device import CCLDevice, CCL_DEVICE_INFO_TYPES
+from .exception import CCLDeviceRegistrationException
 from .sensor import CCL_SENSORS
 
 _LOGGER = logging.getLogger(__name__)
@@ -23,6 +24,8 @@ class CCLServer:
     @staticmethod
     def register(device: CCLDevice) -> None:
         """Register a device with a passkey."""
+        if CCLServer.devices[device.passkey] is not None:
+            raise CCLDeviceRegistrationException("Device already exists")
         CCLServer.devices[device.passkey] = device
         _LOGGER.debug("Device registered: %s", device.passkey)
 
