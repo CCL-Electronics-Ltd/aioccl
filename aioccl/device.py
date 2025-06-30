@@ -145,20 +145,24 @@ class CCLDevice:
         """Remove a registered callback."""
         self._new_sensor_callbacks.discard(callback)
 
-    def _publish_new_sensors(self) -> None:
+    def _publish_new_sensors(self) -> int:
         """Schedule all registered callbacks to add new sensors."""
-        count = 0
+        success_count = 0
+        error_count = 0
         for sensor in self._new_sensors[:]:
             try:
+                assert len(self._new_sensor_callbacks) > 0
                 for callback in self._new_sensor_callbacks:
-                    callback(sensor)
+                    if callback(sensor) is not True:
+                        raise CCLDataUpdateException("Failed to publish new sensor")
                 self._new_sensors.remove(sensor)
-                count += 1
-            except Exception as err:  # pylint: disable=broad-exception-caught
-                _LOGGER.warning(
-                    "Error while adding sensor %s for device %s: %s",
-                    sensor.key,
+                success_count += 1
+            except Exception:  # pylint: disable=broad-exception-caught
+                error_count += 1
+        if error_count > 0:
+            _LOGGER.warning(
+                    "Failed to add %s sensors for device %s",
+                    error_count,
                     self.device_id,
-                    err,
                 )
-        return count
+        return success_count
