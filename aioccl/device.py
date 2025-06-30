@@ -40,11 +40,10 @@ class CCLDevice:
         }
 
         self._sensors: dict[str, CCLSensor] = {}
-
-        self._update_callback = {}
+        self._update_callback: Callable[[], None] | None = None
 
         self._new_sensors: list[CCLSensor] | None = []
-        self._new_sensor_callbacks = set()
+        self._new_sensor_callback: Callable[[], None] | None = None
 
     @property
     def passkey(self) -> str:
@@ -108,12 +107,13 @@ class CCLDevice:
             self._sensors[key].value = value
 
         add_count = self._publish_new_sensors()
-        _LOGGER.debug(
-            "Added %s new sensors for device %s at %s.",
-            add_count,
-            self.device_id,
-            self.last_update_time,
-        )
+        if add_count > 0:
+            _LOGGER.debug(
+                "Added %s new sensors for device %s at %s.",
+                add_count,
+                self.device_id,
+                self.last_update_time,
+            )
 
         self._publish_updates()
         _LOGGER.debug(
@@ -137,13 +137,9 @@ class CCLDevice:
                 err,
             )
 
-    def register_new_sensor_cb(self, callback: Callable[[], None]) -> None:
-        """Register callback of adding a new sensor."""
-        self._new_sensor_callbacks.add(callback)
-
-    def remove_new_sensor_cb(self, callback: Callable[[], None]) -> None:
-        """Remove a registered callback."""
-        self._new_sensor_callbacks.discard(callback)
+    def set_new_sensor_callback(self, callback: Callable[[], None]) -> None:
+        """Set the callback function to add a new sensor."""
+        self._new_sensor_callback = callback
 
     def _publish_new_sensors(self) -> int:
         """Schedule all registered callbacks to add new sensors."""
@@ -151,10 +147,9 @@ class CCLDevice:
         error_count = 0
         for sensor in self._new_sensors[:]:
             try:
-                assert len(self._new_sensor_callbacks) > 0
-                for callback in self._new_sensor_callbacks:
-                    if callback(sensor) is not True:
-                        raise CCLDataUpdateException("Failed to publish new sensor")
+                assert self._new_sensor_callback is not None
+                if self._new_sensor_callback(sensor) is not True:
+                    raise CCLDataUpdateException("Failed to publish new sensor")
                 self._new_sensors.remove(sensor)
                 success_count += 1
             except Exception:  # pylint: disable=broad-exception-caught
