@@ -87,7 +87,9 @@ class CCLDevice:
     @property
     def get_sensors(self) -> dict[str, CCLSensor]:
         """Get all types of sensor data under this device."""
-        if len(self._sensors) == 0:
+        if self._info["last_update_time"] is None:
+            raise CCLDataUpdateException("Device is offline or not ready")
+        if len(self._sensors) == 0 or time.monotonic() - self._info["last_update_time"] > 600:
             raise CCLDataUpdateException("Device is offline or not ready")
         return self._sensors
 
