@@ -98,15 +98,8 @@ class CCLDevice:
                 self._info[key] = str(value)
         self._info["last_update_time"] = time.monotonic()
 
-    def process_data(self, data: dict[str, None | str | int | float]) -> None:
-        """Add or update all sensor values."""
-        for key, value in data.items():
-            if key not in self._sensors:
-                self._sensors[key] = CCLSensor(key)
-                self._new_sensors.append(self._sensors[key])
-            self._sensors[key].last_update_time = time.monotonic()
-            self._sensors[key].value = value
-
+    def push_updates(self) -> None:
+        """Push sensor updates."""
         add_count = self._publish_new_sensors()
         if add_count > 0:
             _LOGGER.debug(
@@ -122,6 +115,16 @@ class CCLDevice:
             self.device_id,
             self.last_update_time,
         )
+        
+    def process_data(self, data: dict[str, None | str | int | float]) -> None:
+        """Add or update all sensor values."""
+        for key, value in data.items():
+            if key not in self._sensors:
+                self._sensors[key] = CCLSensor(key)
+                self._new_sensors.append(self._sensors[key])
+            self._sensors[key].last_update_time = time.monotonic()
+            self._sensors[key].value = value
+        self.push_updates()
 
     def set_update_callback(self, callback: Callable[[], None]) -> None:
         """Set the callback function to update sensor data."""
