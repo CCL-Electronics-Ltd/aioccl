@@ -11,7 +11,8 @@ class CCLSensor:
 
     def __init__(self, key: str):
         """Initialize a CCL sensor."""
-        self._value: None | str | int | float = None
+        self._last_update_time: float | None = None
+        self._value: str | int | float | None = None
 
         if key in CCL_SENSORS:
             self._key = key
@@ -32,14 +33,23 @@ class CCLSensor:
         return CCL_SENSORS[self._key].sensor_type
 
     @property
-    def compartment(self) -> None | str:
+    def compartment(self) -> str | None:
         """Decide which compartment it belongs to."""
         if CCL_SENSORS[self._key].compartment in CCLDeviceCompartment:
             return CCL_SENSORS[self._key].compartment.value
         return None
 
     @property
-    def value(self) -> None | str | int | float:
+    def last_update_time(self) -> float | None:
+        """Return the last update time of the sensor."""
+        return self._last_update_time
+    
+    @last_update_time.setter
+    def last_update_time(self, new_value):
+        self._last_update_time = new_value
+    
+    @property
+    def value(self) -> str | int | float | None:
         """Return the intrinsic sensor value."""
         if self.sensor_type.name in CCL_SENSOR_VALUES:
             return CCL_SENSOR_VALUES[self.sensor_type.name].get(self._value)
@@ -77,7 +87,7 @@ class CCLSensorTypes(enum.Enum):
     CO = 13
     CO2 = 14
     VOLATILE = 15
-    VOC = 16
+    VOC_LEVEL = 16
     PM10 = 17
     PM25 = 18
     AQI = 19
@@ -92,8 +102,8 @@ class CCLSensorTypes(enum.Enum):
 class CCLDeviceCompartment(enum.Enum):
     """Grouping of CCL sensors."""
 
-    MAIN = "Console & Sensor Array"
-    OTHER = "Other Sensors"
+    MAIN = "Console & Sensor array"
+    OTHER = "Other sensors"
     STATUS = "Status"
 
 
@@ -211,7 +221,7 @@ CCL_SENSORS: dict[str, CCLSensorPreset] = {
         "Air Quality: PM2.5 AQI", CCLSensorTypes.AQI, CCLDeviceCompartment.OTHER
     ),
     "t9voclv": CCLSensorPreset(
-        "Air Quality: VOC Level", CCLSensorTypes.VOC, CCLDeviceCompartment.OTHER
+        "Air Quality: VOC Level", CCLSensorTypes.VOC_LEVEL, CCLDeviceCompartment.OTHER
     ),
     "t234c1tem": CCLSensorPreset(
         "CH1 Temperature", CCLSensorTypes.TEMPERATURE, CCLDeviceCompartment.OTHER

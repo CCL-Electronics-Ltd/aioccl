@@ -104,6 +104,7 @@ class CCLDevice:
             if key not in self._sensors:
                 self._sensors[key] = CCLSensor(key)
                 self._new_sensors.append(self._sensors[key])
+            self._sensors[key].last_update_time = time.monotonic()
             self._sensors[key].value = value
 
         add_count = self._publish_new_sensors()
