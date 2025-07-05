@@ -7,7 +7,7 @@ import time
 from typing import Callable, TypedDict
 
 from .exception import CCLDataUpdateException
-from .sensor import CCLSensor, CCL_SENSORS
+from .sensor import CCLSensor
 
 _LOGGER = logging.getLogger(__name__)
 
@@ -83,8 +83,7 @@ class CCLDevice:
     def fw_ver(self) -> str | None:
         """Return the firmware version."""
         return self._info["fw_ver"]
-    
-    @property
+
     def get_sensors(self) -> dict[str, CCLSensor]:
         """Get all types of sensor data under this device."""
         if self._info["last_update_time"] is None:
@@ -92,6 +91,15 @@ class CCLDevice:
         if len(self._sensors) == 0 or time.monotonic() - self._info["last_update_time"] > 600:
             raise CCLDataUpdateException("Device is offline or not ready")
         return self._sensors
+    
+    def set_update_callback(self, callback: Callable[[], None]) -> None:
+        """Set the callback function to update sensor data."""
+        self._update_callback = callback
+        
+    def set_new_sensor_callback(self, callback: Callable[[], None]) -> None:
+        """Set the callback function to add a new sensor."""
+        self._new_sensor_callback = callback
+
 
     def update_info(self, new_info: dict[str, None | str]) -> None:
         """Add or update device info."""
@@ -128,10 +136,6 @@ class CCLDevice:
             self._sensors[key].value = value
         self.push_updates()
 
-    def set_update_callback(self, callback: Callable[[], None]) -> None:
-        """Set the callback function to update sensor data."""
-        self._update_callback = callback
-
     def _publish_updates(self) -> None:
         """Call the function to update sensor data."""
         try:
@@ -142,10 +146,6 @@ class CCLDevice:
                 self.device_id,
                 err,
             )
-
-    def set_new_sensor_callback(self, callback: Callable[[], None]) -> None:
-        """Set the callback function to add a new sensor."""
-        self._new_sensor_callback = callback
 
     def _publish_new_sensors(self) -> int:
         """Schedule all registered callbacks to add new sensors."""
