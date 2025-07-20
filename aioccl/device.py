@@ -110,11 +110,9 @@ class CCLDevice:
 
     def push_updates(self) -> None:
         """Push sensor updates."""
-        add_count = self._publish_new_sensors()
-        if add_count > 0:
+        if self._publish_new_sensors() is True:
             _LOGGER.debug(
-                "Added %s new sensors for device %s at %s.",
-                add_count,
+                "Added new sensors for device %s at %s.",
                 self.device_id,
                 self.last_update_time,
             )
@@ -147,23 +145,12 @@ class CCLDevice:
                 err,
             )
 
-    def _publish_new_sensors(self) -> int:
+    def _publish_new_sensors(self) -> bool | None:
         """Schedule all registered callbacks to add new sensors."""
-        success_count = 0
-        error_count = 0
-        for sensor in self._new_sensors[:]:
-            try:
-                assert self._new_sensor_callback is not None
-                if self._new_sensor_callback(sensor) is not True:
-                    raise CCLDataUpdateException("Failed to publish new sensor")
-                self._new_sensors.remove(sensor)
-                success_count += 1
-            except Exception:  # pylint: disable=broad-exception-caught
-                error_count += 1
-        if error_count > 0:
-            _LOGGER.warning(
-                    "Failed to add %s sensors for device %s",
-                    error_count,
-                    self.device_id,
-                )
-        return success_count
+        try:
+            assert self._new_sensor_callback is not None
+            if self._new_sensor_callback(self._new_sensors) is not True:
+                raise CCLDataUpdateException("Failed to publish new sensor")
+        except Exception:  # pylint: disable=broad-exception-caught
+            return None
+        return True
