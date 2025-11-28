@@ -13,6 +13,12 @@ from .sensor import CCL_SENSORS
 
 _LOGGER = logging.getLogger(__name__)
 
+def register(devices: dict[str, CCLDevice], device: CCLDevice) -> None:
+    """Register a device with a passkey."""
+    if devices.get(device.passkey, None) is not None:
+        raise CCLDeviceRegistrationException("Device already exists")
+    devices[device.passkey] = device
+    _LOGGER.debug("Device registered: %s", device.passkey)
 
 class CCLServer:
     """Represent a CCL server manager."""
@@ -24,10 +30,7 @@ class CCLServer:
     @staticmethod
     def register(device: CCLDevice) -> None:
         """Register a device with a passkey."""
-        if CCLServer.devices.get(device.passkey, None) is not None:
-            raise CCLDeviceRegistrationException("Device already exists")
-        CCLServer.devices[device.passkey] = device
-        _LOGGER.debug("Device registered: %s", device.passkey)
+        register(CCLServer.devices, device)
 
     @staticmethod
     async def handler(request: web.BaseRequest | web.Request) -> web.Response:
