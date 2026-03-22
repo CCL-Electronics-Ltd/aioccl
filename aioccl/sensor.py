@@ -75,7 +75,7 @@ class CCLSensorTypes(enum.Enum):
     PRESSURE = 1
     TEMPERATURE = 2
     HUMIDITY = 3
-    WIND_DIRECITON = 4
+    WIND_DIRECTION = 4
     WIND_SPEED = 5
     RAIN_RATE = 6
     RAINFALL = 7
@@ -185,7 +185,7 @@ CCL_SENSORS: dict[str, CCLSensorPreset] = {
     ),
     "t1uvi": CCLSensorPreset("UV Index", CCLSensorTypes.UVI, CCLDeviceCompartment.MAIN),
     "t1wdir": CCLSensorPreset(
-        "Wind Direction", CCLSensorTypes.WIND_DIRECITON, CCLDeviceCompartment.MAIN
+        "Wind Direction", CCLSensorTypes.WIND_DIRECTION, CCLDeviceCompartment.MAIN
     ),
     "t1wgust": CCLSensorPreset(
         "Wind Gust", CCLSensorTypes.WIND_SPEED, CCLDeviceCompartment.MAIN
