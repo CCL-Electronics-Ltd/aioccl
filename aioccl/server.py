@@ -45,7 +45,7 @@ class CCLServer:
 
         _LOGGER.debug("Request received: %s", passkey)
         try:
-            passkey = request.path[-8:]
+            passkey = request.path[-32:]
             for ref_passkey, ref_device in CCLServer.devices.items():
                 if passkey == ref_passkey:
                     device = ref_device
