@@ -33,11 +33,10 @@ class CCLServer:
         register(CCLServer.devices, device)
 
     @staticmethod
-    async def handler(request: web.BaseRequest | web.Request, devices: dict[str, CCLDevice]) -> web.Response:
+    async def handler(request: web.BaseRequest | web.Request, device: CCLDevice) -> web.Response:
         """Handle POST requests for data updating."""
         body: dict[str, None | str | int | float] = {}
         data: dict[str, None | str | int | float] = {}
-        device: CCLDevice = None
         info: dict[str, None | str] = {}
         passkey: str = ""
         status: None | int = None
@@ -46,10 +45,7 @@ class CCLServer:
         _LOGGER.debug("Request received: %s", passkey)
         try:
             passkey = request.path[-64:]
-            for ref_passkey, ref_device in devices.items():
-                if passkey == ref_passkey:
-                    device = ref_device
-                    break
+            assert passkey == device.passkey, HTTPStatus.NOT_FOUND
             assert isinstance(device, CCLDevice), HTTPStatus.NOT_FOUND
 
             assert request.content_type == "application/json", HTTPStatus.BAD_REQUEST
