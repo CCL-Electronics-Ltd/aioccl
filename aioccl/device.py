@@ -58,7 +58,7 @@ class CCLDevice:
         return self.mac_address.replace(":", "").lower()[-6:]
 
     @property
-    def last_update_time(self) -> str | None:
+    def last_update_time(self) -> float | None:
         """Return the last update time."""
         return self._info["last_update_time"]
 
