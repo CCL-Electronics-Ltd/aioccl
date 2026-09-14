@@ -6,6 +6,15 @@ from dataclasses import dataclass
 import enum
 from typing import Any
 
+@dataclass
+class CCLSensorPreset:
+    """Attributes of a CCL sensor."""
+
+    name: str
+    sensor_type: CCLSensorTypes
+    compartment: CCLDeviceCompartment | None = None
+    binary: bool = False
+
 class CCLSensor:
     """Class that represents a CCLSensor object in the aioCCL API."""
 
@@ -16,6 +25,12 @@ class CCLSensor:
 
         if key in CCL_SENSORS:
             self._key = key
+            self._preset = CCL_SENSORS[key]
+            self.binary = self._preset.sensor_type.name in {
+                "BATTERY_BINARY",
+                "CONNECTION",
+                "LEAKAGE",
+            }
 
     @property
     def key(self) -> str:
@@ -58,15 +73,6 @@ class CCLSensor:
     @value.setter
     def value(self, new_value):
         self._value = new_value
-
-
-@dataclass
-class CCLSensorPreset:
-    """Attributes of a CCL sensor."""
-
-    name: str
-    sensor_type: str
-    compartment: CCLDeviceCompartment | None = None
 
 
 class CCLSensorTypes(enum.Enum):
