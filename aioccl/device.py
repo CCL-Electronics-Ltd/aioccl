@@ -4,7 +4,8 @@ from __future__ import annotations
 
 import logging
 import time
-from typing import Callable, TypedDict
+from collections.abc import Callable
+from typing import TypedDict
 
 from .exception import CCLDataUpdateException
 from .sensor import CCLSensor
@@ -39,8 +40,11 @@ class CCLDevice:
             "serial_no": None,
         }
 
-        self._sensors: dict[str, CCLSensor] = {}
-        self._update_callback: Callable[[], None] | None = None
+        self._data: dict[str, dict[str, CCLSensor]] = {
+            "SENSOR": {},
+            "BINARY_SENSOR": {},
+        }
+        self._update_callback: Callable[[dict[str, dict[str, CCLSensor]]], None] | None = None
 
         self._new_sensors: list[CCLSensor] | None = []
         self._new_sensor_callback: Callable[[], None] | None = None
@@ -84,15 +88,20 @@ class CCLDevice:
         """Return the firmware version."""
         return self._info["fw_ver"]
 
-    def get_sensors(self) -> dict[str, CCLSensor]:
+    def get_data(self) -> dict[str, dict[str, CCLSensor]]:
         """Get all types of sensor data under this device."""
         if self._info["last_update_time"] is None:
             raise CCLDataUpdateException("Device is offline or not ready")
-        if len(self._sensors) == 0 or time.monotonic() - self._info["last_update_time"] > 600:
+        if (
+            not any(self._data.values())
+            or time.monotonic() - self._info["last_update_time"] > 600
+        ):
             raise CCLDataUpdateException("Device is offline or not ready")
-        return self._sensors
+        return self._data
     
-    def set_update_callback(self, callback: Callable[[], None]) -> None:
+    def set_update_callback(
+        self, callback: Callable[[dict[str, dict[str, CCLSensor]]], None]
+    ) -> None:
         """Set the callback function to update sensor data."""
         self._update_callback = callback
         
@@ -127,17 +136,27 @@ class CCLDevice:
     def process_data(self, data: dict[str, None | str | int | float]) -> None:
         """Add or update all sensor values."""
         for key, value in data.items():
-            if key not in self._sensors:
-                self._sensors[key] = CCLSensor(key)
-                self._new_sensors.append(self._sensors[key])
-            self._sensors[key].last_update_time = time.monotonic()
-            self._sensors[key].value = value
+            sensor = next(
+                (
+                    sensors[key]
+                    for sensors in self._data.values()
+                    if key in sensors
+                ),
+                None,
+            )
+            if sensor is None:
+                sensor = CCLSensor(key)
+                bucket = "BINARY_SENSOR" if sensor.binary else "SENSOR"
+                self._data[bucket][key] = sensor
+                self._new_sensors.append(sensor)
+            sensor.last_update_time = time.monotonic()
+            sensor.value = value
         self.push_updates()
 
     def _publish_updates(self) -> None:
         """Call the function to update sensor data."""
         try:
-            self._update_callback(self._sensors)
+            self._update_callback(self._data)
         except Exception as err:  # pylint: disable=broad-exception-caught
             _LOGGER.warning(
                 "Error while updating sensors for device %s: %s",
