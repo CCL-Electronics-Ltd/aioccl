@@ -172,4 +172,5 @@ class CCLDevice:
                 raise CCLDataUpdateException("Failed to publish new sensor")
         except Exception:  # pylint: disable=broad-exception-caught
             return None
+        self._new_sensors = []
         return True
